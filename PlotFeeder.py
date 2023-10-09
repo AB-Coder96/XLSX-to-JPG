@@ -58,17 +58,18 @@ for file in xlsx_files:
         print(des)
         print(['The length of data are:',len(df.iloc[:, des])])
         ########################## Smooth the Data ####################################
-        window_size=10
+        window_size=5
         smoothed_data = df.iloc[:, des].rolling(window=window_size, center=True).median()
         max_value = smoothed_data.max()
-        max_index = df[date_time_column].idxmax()
+        max_index = smoothed_data.idxmax()
         print('max index is:',max_index)
+        print('max value is:',max_value)
         plt.figure(figsize=(10, 6))
         plt.plot(df[date_time_column], df.iloc[:, des], marker='o', linestyle='-', color='b')
-        plt.annotate(f'Max: ({df[date_time_column][max_index]}, {max_value})',
+        plt.annotate(f'Max: ({max_value})',
              xy=(df[date_time_column][max_index], max_value),
-             xytext=(df[date_time_column][max_index], max_value + 2),
-             arrowprops=dict(arrowstyle='->', color='red', linewidth=1.5),
+             xytext=(df[date_time_column][max_index], 3*max_value/4),
+             arrowprops=dict(arrowstyle='->', color='red', linewidth=.5, shrinkA=1, shrinkB=1),
              fontsize=12, color='red', weight='bold')
         plt.title(['Plot of' ,df.columns[des], 'against Date and Time'])
         print(['Plot of' ,df.columns[des], 'against Date and Time'])
@@ -80,4 +81,4 @@ for file in xlsx_files:
         plt.grid(True)
         print(plot_path)
         # Save the plot to the specified directory and filename
-        plt.savefig(plot_path)
+        plt.savefig(plot_path,dpi=600,bbox_inches='tight')
