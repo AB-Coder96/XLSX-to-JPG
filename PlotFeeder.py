@@ -2,7 +2,10 @@ import os
 import datetime
 import pandas as pd
 import matplotlib.pyplot as plt
+from docx.shared import Inches
 import re
+from docx import Document
+from docx.shared import Pt
 def parse_and_correct_datetime(date_str):
     try:
         parts = date_str.split(' ')
@@ -40,10 +43,16 @@ xlsx_files = [file for file in os.listdir(directory_path) if file.endswith('.xls
 print(xlsx_files)
 # Process each .xlsx file
 i=0
+ii=0
+doc = Document()
+HD1='Appendix 2: Load Data Provided By Redstone Arsenal'
+doc.add_heading(HD1, level=1)
 for file in xlsx_files:
     file_path = os.path.join(directory_path, file)
     print([i,'file is read'])
     print(['file name is',file])
+    filen=file.replace('.xlsx',"")
+    doc.add_heading(filen, level=2)
     filen=file.replace('.xlsx',"")
     print(['filen name is',filen])
     i=i+1
@@ -82,3 +91,12 @@ for file in xlsx_files:
         print(plot_path)
         # Save the plot to the specified directory and filename
         plt.savefig(plot_path,dpi=600,bbox_inches='tight')
+        doc.add_picture(plot_path, width=Inches(6))  # Adjust the width as needed
+        table_caption = f"Figure {ii}: Plot of {df.columns[des]} against Date and Time"
+        ii=ii+1
+        caption_paragraph = doc.add_paragraph(table_caption)
+        caption_paragraph.alignment = 1  # Center alignment
+current_datetime = datetime.datetime.now()
+timestamp = current_datetime.strftime("%Y-%m-%d_%H-%M-%S")
+document_filename = output_file_path = f"{excel_file_pass}/Load Figures {timestamp}.docx"
+doc.save(document_filename)
